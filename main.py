@@ -23,7 +23,7 @@ async def on_member_join(member):
 @client.event
 async def on_member_remove(member):
   channel = client.get_channel(877611571843592286)
-  await channel.send(f"{member.name} kok left :(\n :pepehands:")
+  await channel.send(f"{member.name} kok left :(")
   await channel.send("<:PepeHands:881946934154231839>")
 
 
