@@ -1,26 +1,53 @@
-member_list = {
-  "713265740764938252": "Mas Jerry",
-  "231415863629185026": "Arga Ganteng Katanya",
-  "710509883245461515": "Jova Unch",
-  "744764076651053106": "Jjooyy Pro Peler Valo",
-  "739344507811921961": "Ayub Pacarnya Ragil",
-  "748910496316522697": "Nikonikoniii",
-  "703153744765779980": "Mozzz | Tian",
-  "752168080641359883": "Mian Tukang Halu",
-  "747626901413298277": "Greg - Lost People",
-  "749111086195933286": "Stephanie I Lob U 3000",
-  "747468422874660915": "Yohana VVibu"
-}
+from replit import db
+
+async def add_name(member_id, real_name, display_name):
+  if "member_list" in db.keys():
+    member_list = db["member_list"]
+    member_list.append(member_id + " : " + real_name + " : " + display_name)
+    db["member_list"] = member_list
+  else:
+    db["member_list"] = [member_id + " : " + real_name + " : " + display_name]
+
+
+async def change_name(member_id, new_name):
+  member_list = db["member_list"]
+  for i in range(len(member_list)):
+    if member_list[i].startswith(member_id):
+      raw_name = (member_list[i]).split(" : ")
+      member_list[i] = member_id + " : " + new_name + " : " + raw_name[2]
+      break
+  db["member_list"] = member_list
+
+
+async def remove_name(member_id):
+  member_list = db["member_list"]
+  for i in range(len(member_list)):
+    if member_list[i].startswith(member_id):
+      member_list.pop(i)
+      break
+  db["member_list"] = member_list
+
 
 async def get_name(message, embed):
-  d_name = []
-  r_name = []
+  lists_name = []
+  real_name = []
+  list_server_id = []
+  list_server_name = []
+
+  if "member_list" in db.keys():
+    lists_name = db["member_list"]
+
   for member in message.guild.members:
-    if member.bot or (str(member.id) not in member_list):
+    if member.bot:
       continue
-    d_name.append(member.display_name)
-    r_name.append(member_list[str(member.id)])
-    
-  embed.add_field(name = "Nicknamenya\t\t.\t\t", value='\n'.join(d_name))
-  embed.add_field(name = "Aslinya", value='\n'.join(r_name))
+    list_server_id.append(str(member.id))
+    list_server_name.append(f"{len(list_server_name) + 1}. {member.display_name}")
+
+  for _id in list_server_id:
+    for data_id in lists_name:
+      if data_id.split(" : ")[0] == _id:
+        real_name.append(f"{len(real_name) + 1}. {data_id.split(' : ')[1]}")
+  
+  embed.add_field(name = "Nickname\t\t.\t\t", value='\n'.join(list_server_name))
+  embed.add_field(name = "Real Name", value='\n'.join(real_name))
   await message.channel.send(embed = embed)
