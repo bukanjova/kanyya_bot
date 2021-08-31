@@ -20,7 +20,9 @@ async def get_love(message):
   if acc:
     person1 = slug[2]
     person2 = slug[4][:-1]
-    if (len(person1) + len(person2)) % 2:
+    if person1 == person2:
+      await message.channel.send('invalid input')
+    elif not (len(person1) + len(person2)) % 3:
       await message.channel.send('yes')
     else:
       await message.channel.send('no')
