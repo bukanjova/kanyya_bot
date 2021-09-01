@@ -4,6 +4,7 @@ from keep_alive import keep_alive
 from member_name import add_name, change_name, remove_name, get_name
 from temp_data import add_hate, get_hate, get_love
 import random
+from tugas import getTugas
 
 intents = discord.Intents(messages=True, guilds=True, members=True)
 
@@ -49,14 +50,21 @@ async def on_message(message):
       if len(slug) != 3:
         await message.channel.send("input tidak valid")
       else:
-        await change_name((slug[1])[3:-1], slug[2])
-        await message.channel.send("name updated")
+        print(slug[1])
+        if slug[1].startswith("<@!"):
+          await change_name((slug[1])[3:-1], slug[2])
+          await message.channel.send("name updated")
+        elif slug[1].startswith("<@"):
+          await change_name((slug[1])[2:-1], slug[2])
+          await message.channel.send("name updated")
+        else:
+          await message.channel.send('invalid input')
     else:
       await message.channel.send("I've told you thousands of times, only my boyfriend can use this command")
       await message.channel.send("<:Pepega:880828641766932500>")
   
   if msg == 'kanyya help':
-    desc = "kanyya revealname = reveal every member's real name\n\nkanyya i was hurt by <tag or name> = I will by your side.\n\nkanyya do you love me? = just try it!\n\nkanyya does <he/she> love <he/she>? = I will use my vision\n\n\n\n!changename. <tag>. <new name> = change member's real name. Btw, only my boyfriend can do this.\n\n"
+    desc = "kanyya revealname = reveal every member's real name\n\nkanyya i was hurt by <tag or name> = I will by your side.\n\nkanyya do you love me? = just try it!\n\nkanyya does <he/she> love <he/she>? = I will use my vision\n\n<message>!rc = random capitalize message\n\n!changename. <tag>. <new name> = change member's real name. Btw, only my boyfriend can do this.\n\n"
     embed = discord.Embed(title='Current Available Command', description=desc)
     await message.channel.send(embed = embed)
   
@@ -65,9 +73,9 @@ async def on_message(message):
   
   if msg.startswith("kanyya i was hurt by "):
     victim = msg.split(" ")[-1]
-    if victim[3:-1] == os.getenv('ADMIN2'):
+    if os.getenv('ADMIN2') in victim:
       await message.channel.send("I am so sorry :(")
-    elif victim[3:-1] == os.getenv('ADMIN'):
+    elif os.getenv('ADMIN') in victim:
       await message.channel.send("I don't believe you. He is my boy.")
     else:
       words = await get_hate()
@@ -87,6 +95,14 @@ async def on_message(message):
   
   if msg.startswith('kanyya does'):
     await get_love(message)
+  
+  if msg.startswith("task"):
+    jurusan = msg.split("::")[-1]
+    await getTugas(message, jurusan.upper())
+  
+  if msg.endswith('!rc'):
+    new_msg = ''.join(random.choice((str.upper, str.lower))(c) for c in msg[:-3])
+    await message.channel.send(new_msg)
 
 keep_alive()
 client.run(os.getenv('TOKEN'))
