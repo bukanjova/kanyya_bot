@@ -103,6 +103,7 @@ async def on_message(message):
   if msg.endswith('!rc'):
     new_msg = ''.join(random.choice((str.upper, str.lower))(c) for c in msg[:-3])
     await message.channel.send(new_msg)
+    await message.delete()
 
 keep_alive()
 client.run(os.getenv('TOKEN'))
